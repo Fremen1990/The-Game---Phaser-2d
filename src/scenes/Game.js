@@ -7,6 +7,14 @@ class Game extends Phaser.Scene {
   }
 
   preload() {
+
+    this.load.tilemapTiledJSON('level-1', 'assets/tilemaps/level-1.json');
+
+    this.load.image('world-1-sheet', 'assets/tilesets/world-1.png');
+    this.load.image('clouds-sheet', 'assets/tilesets/clouds.png');
+
+
+
     this.load.spritesheet('hero-idle-sheet', 'assets/hero/idle.png', {
       frameWidth: 32,
       frameHeight: 64,
@@ -80,12 +88,49 @@ class Game extends Phaser.Scene {
       repeat: -1,
     });
 
+    this.addMap();
+
+    this.addHero();
+
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.cameras.main.startFollow(this.hero);
+
+  }
+
+  addHero() {
     this.hero = new Hero(this, 250, 160);
 
-    const platform = this.add.rectangle(220, 240, 260, 10, 0x4BCB7C);
-    this.physics.add.existing(platform, true);
-    this.physics.add.collider(this.hero, platform);
+    this.children.moveTo(this.hero, this.children.getIndex(this.map.getLayer('Foreground').tilemapLayer));
+
+    this.physics.add.collider(this.hero, this.map.getLayer('Ground').tilemapLayer);
   }
+
+  addMap() {
+
+    this.map = this.make.tilemap({ key: 'level-1' });
+    const groundTiles = this.map.addTilesetImage('world-1', 'world-1-sheet');
+    const backgroundTiles = this.map.addTilesetImage('Clouds', 'clouds-sheet');
+
+    const backgroundLayer_1 = this.map.createStaticLayer('Background-1', backgroundTiles);
+    const backgroundLayer_2 = this.map.createStaticLayer('Background-2', backgroundTiles);
+    backgroundLayer_1.setScrollFactor(0.6);
+    backgroundLayer_2.setScrollFactor(0.3);
+
+    const groundLayer = this.map.createStaticLayer('Ground', groundTiles);
+    groundLayer.setCollision([1, 2, 4], true);
+
+
+    this.map.createStaticLayer('Foreground', groundTiles);
+
+
+    this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.physics.world.setBoundsCollision(true, true, false, true);
+
+    // const debugGraphics = this.add.graphics();
+    // groundLayer.renderDebug(debugGraphics);
+
+  }
+
   update(time, delta) { }
 }
 export default Game;

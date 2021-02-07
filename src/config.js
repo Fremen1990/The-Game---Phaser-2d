@@ -17,6 +17,10 @@ export default {
     pixelArt: true,
   },
 
+  audio: {
+    noAudio: true,
+  },
+
   physics: {
     default: 'arcade',
     arcade: {
