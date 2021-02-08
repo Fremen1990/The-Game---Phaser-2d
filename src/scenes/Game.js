@@ -17,8 +17,12 @@ class Game extends Phaser.Scene {
       spacing: 2,
     });
 
-    this.load.image('clouds-sheet', 'assets/tilesets/clouds.png');
+    this.load.spritesheet('coin-sheet', 'assets/tilesets/coin.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
 
+    this.load.image('clouds-sheet', 'assets/tilesets/clouds.png');
 
 
     this.load.spritesheet('hero-idle-sheet', 'assets/hero/idle.png', {
@@ -104,6 +108,7 @@ class Game extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers('hero-die-sheet'),
     });
 
+
     this.addMap();
 
     this.addHero();
@@ -138,24 +143,32 @@ class Game extends Phaser.Scene {
     this.map = this.make.tilemap({ key: 'level-1' });
     const groundTiles = this.map.addTilesetImage('world-1', 'world-1-sheet');
     const backgroundTiles = this.map.addTilesetImage('Clouds', 'clouds-sheet');
-
-    const backgroundLayer_1 = this.map.createStaticLayer('Background-1', backgroundTiles);
-    const backgroundLayer_2 = this.map.createStaticLayer('Background-2', backgroundTiles);
+    const backgroundLayer_1 = this.map.createLayer('Background-1', backgroundTiles);
+    const backgroundLayer_2 = this.map.createLayer('Background-2', backgroundTiles);
     backgroundLayer_1.setScrollFactor(0.6);
     backgroundLayer_2.setScrollFactor(0.3);
 
-    const groundLayer = this.map.createStaticLayer('Ground', groundTiles);
+
+    // const coinImage = this.map.addTilesetImage('animated-items', 'coin-sheet')
+    // this.map.createLayer('Animations', coinImage)
+
+
+    const groundLayer = this.map.createLayer('Ground', groundTiles);
     groundLayer.setCollision([1, 2, 4], true);
-
-
-
 
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     this.physics.world.setBoundsCollision(true, true, false, true);
 
     this.spikeGroup = this.physics.add.group({ immovable: true, allowGravity: false });
 
+    this.coinsFoodGroup = this.physics.add.group({ immovable: false, allowGravity: false });
 
+    this.map.getObjectLayer('Animations').objects.forEach(object => {
+      if (object.gid === 185) {
+        this.coinsFoodGroup.create(object.x, object.y, 'coin-sheet');
+        this.coinsFoodGroup.setOrigin(0, 1);
+      }
+    })
 
     this.map.getObjectLayer('Objects').objects.forEach(object => {
       if (object.name === 'Start') {
@@ -169,7 +182,7 @@ class Game extends Phaser.Scene {
       }
     })
 
-    this.map.createStaticLayer('Foreground', groundTiles);
+    this.map.createLayer('Foreground', groundTiles);
 
     // const debugGraphics = this.add.graphics();
     // groundLayer.renderDebug(debugGraphics);
@@ -183,8 +196,6 @@ class Game extends Phaser.Scene {
       this.hero.destroy();
       this.addHero();
     }
-
-
   }
 }
 export default Game;
