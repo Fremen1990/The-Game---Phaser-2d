@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deplo": "npm run build && webpack-dev-server --host=0.0.0.0 --port=$PORT --disable-host-check"
   },
   "author": "Jed Hastwell",
   "repository": "https://github.com/jedhastwell/phaser3-es6-webpack-boilerplate",
@@ -30,5 +31,7 @@
     "javascript-state-machine": "^3.1.0",
     "node": "^12.16.2",
     "phaser": "^3.52.0"
-  }
+  },
+  "heroku-run-build-script": true
+
 }
