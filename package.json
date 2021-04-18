@@ -2,10 +2,10 @@
   "name": "phaser3-es6-webpack-boilerplate",
   "version": "1.0.0",
   "description": "A boilerplate project for creating games with Phaser3, ES6 and Webpack",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack --mode production",
+    "start": "npm run build && webpack-dev-server",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jed Hastwell",
