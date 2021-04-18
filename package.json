@@ -4,8 +4,8 @@
   "description": "A boilerplate project for creating games with Phaser3, ES6 and Webpack",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack-dev-server",
+    "start": "webpack-dev-server --mode development",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jed Hastwell",
@@ -21,7 +21,7 @@
     "raw-loader": "^2.0.0",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
     "javascript-state-machine": "^3.1.0",
