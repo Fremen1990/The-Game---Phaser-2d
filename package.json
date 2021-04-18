@@ -21,9 +21,10 @@
     "raw-loader": "^2.0.0",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1"
+    "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "javascript-state-machine": "^3.1.0",
     "phaser": "^3.22.0"
   }
