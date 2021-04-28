@@ -1,12 +1,12 @@
 /// <reference path="../typings/phaser.d.ts" />
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 export default {
   type: Phaser.AUTO,
-  parent: 'game',
-  backgroundColor: '#33A5E7',
+  parent: "game",
+  backgroundColor: "#33A5E7",
   scale: {
-    width: 500,
+    width: 600,
     height: 320,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -15,13 +15,13 @@ export default {
     pixelArt: true,
   },
   physics: {
-    default: 'arcade',
+    default: "arcade",
     arcade: {
       gravity: { y: 750 },
       debug: false,
       debugShowVelocity: true,
       debugShowBody: true,
       debugShowStaticBody: true,
-    }
+    },
   },
 };
