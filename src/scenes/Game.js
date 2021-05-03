@@ -1,6 +1,9 @@
 /// <reference path="../../typings/phaser.d.ts" />
 import Phaser from "phaser";
 import Hero from "../entities/Hero";
+import ButtonsScenes from "./ButtonsScene";
+import eventsCenter from "./EventsCenter";
+import ScoreScene from "./ScoreScene";
 
 class Game extends Phaser.Scene {
   constructor() {
@@ -52,13 +55,6 @@ class Game extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 64,
     });
-
-    ///////////////////////buttons mobile/////////////////
-    // this.load.sprintesheet("buttons", "assets/buttons/left-button.png", 50, 50);
-
-    this.load.image("buttonLeft", "../../assets/buttons/left.png");
-    this.load.image("buttonRight", "../../assets/buttons/right.png");
-    this.load.image("buttonUp", "../../assets/buttons/up.png");
   }
 
   create(data) {
@@ -117,9 +113,20 @@ class Game extends Phaser.Scene {
       this.map.widthInPixels,
       this.map.heightInPixels
     );
-    const buttonRight = this.add.sprite(300, 400, "buttonRight");
-    buttonRight.fixedToCamera = true;
+
+    this.scene.run("ButtonsScene", { mobieGoRight: this.mobieGoRight });
+
+    this.scene.run("ScoreScene");
+
+    // this.infoSceneEmitter = new Phaser.Events.EventEmitter();
+    // this.scene.run("ButtonsScene", { eventEmitter: this.infoSceneEmitter });
   }
+
+  ////////////////////////////////////////////////
+  updateCount(count) {
+    this.label.text = `Count: ${count}`;
+  }
+  //////////////////////////////////////////////////////
 
   addHero() {
     this.hero = new Hero(this, this.spawnPos.x, this.spawnPos.y);
@@ -207,24 +214,7 @@ class Game extends Phaser.Scene {
     // });
     // scoreText.fixedToCamera = true;
     // scoreText.cameraOffset.setTo(200, 200);
-
-    ////////////////////////buttons mobile/////////////////
-
-    // var btnPlay = game.add.button(game.world.centerX, 100, "button");
-
-    // this.add.sprite(0, 300, "buttonLeft").setOrigin(0, 0);
-    // this.add.sprite(500, 300, "buttonRight").setOrigin(0, 0);
-    // this.add.sprite(200, 300, "buttonUp").setOrigin(0, 0);
-
-    // const buttonLeft = this.add.sprite(0, 300, "buttonLeft");
-    // buttonLeft.fixedToCamera = true;
-
-    // const buttonRight = this.add.sprite(300, 400, "buttonRight");
-    // buttonRight.fixedToCamera = true;
-    // buttonRight.cameraOffset.setTo(100, 100);
   }
-
-  addMobileButtons() {}
 
   update(time, delta) {
     const cameraBottom = this.cameras.main.getWorldPoint(
@@ -234,7 +224,10 @@ class Game extends Phaser.Scene {
 
     if (this.hero.isDead() && this.hero.getBounds().top > cameraBottom + 100) {
       this.hero.destroy();
-      this.addHero();
+
+      this.scene.start("GameOverScene");
+
+      // this.addHero();
     }
   }
 }

@@ -1,16 +1,17 @@
 /// <reference path="../../typings/phaser.d.ts" />
-import Phaser from 'phaser';
-import StateMachine from 'javascript-state-machine';
+import Phaser from "phaser";
+import StateMachine from "javascript-state-machine";
+import ButtonsScenes from "../scenes/ButtonsScene";
+import eventsCenter from "../scenes/EventsCenter";
 
 class Hero extends Phaser.GameObjects.Sprite {
-
   constructor(scene, x, y) {
-    super(scene, x, y, 'hero-run-sheet', 0);
-    
+    super(scene, x, y, "hero-run-sheet", 0);
+
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.anims.play('hero-running');
+    this.anims.play("hero-running");
 
     this.setOrigin(0.5, 1);
     this.body.setCollideWorldBounds(true);
@@ -28,19 +29,23 @@ class Hero extends Phaser.GameObjects.Sprite {
 
   setupAnimations() {
     this.animState = new StateMachine({
-      init: 'idle',
+      init: "idle",
       transitions: [
-        { name: 'idle', from: ['falling', 'running', 'pivoting'], to: 'idle' },
-        { name: 'run', from: ['falling', 'idle', 'pivoting'], to: 'running' },
-        { name: 'pivot', from: ['falling', 'running'], to: 'pivoting' },
-        { name: 'jump', from: ['idle', 'running', 'pivoting'], to: 'jumping' },
-        { name: 'flip', from: ['jumping', 'falling'], to: 'flipping' },
-        { name: 'fall', from: ['idle', 'running', 'pivoting', 'jumping', 'flipping'], to: 'falling' },
-        { name: 'die', from: '*', to: 'dead' },
+        { name: "idle", from: ["falling", "running", "pivoting"], to: "idle" },
+        { name: "run", from: ["falling", "idle", "pivoting"], to: "running" },
+        { name: "pivot", from: ["falling", "running"], to: "pivoting" },
+        { name: "jump", from: ["idle", "running", "pivoting"], to: "jumping" },
+        { name: "flip", from: ["jumping", "falling"], to: "flipping" },
+        {
+          name: "fall",
+          from: ["idle", "running", "pivoting", "jumping", "flipping"],
+          to: "falling",
+        },
+        { name: "die", from: "*", to: "dead" },
       ],
       methods: {
         onEnterState: (lifecycle) => {
-          this.anims.play('hero-' + lifecycle.to);
+          this.anims.play("hero-" + lifecycle.to);
           console.log(lifecycle);
         },
       },
@@ -51,16 +56,22 @@ class Hero extends Phaser.GameObjects.Sprite {
         return this.body.onFloor() && this.body.velocity.x === 0;
       },
       run: () => {
-        return this.body.onFloor() && Math.sign(this.body.velocity.x) === (this.flipX ? -1 : 1);
+        return (
+          this.body.onFloor() &&
+          Math.sign(this.body.velocity.x) === (this.flipX ? -1 : 1)
+        );
       },
       pivot: () => {
-        return this.body.onFloor() && Math.sign(this.body.velocity.x) === (this.flipX ? 1 : -1);
+        return (
+          this.body.onFloor() &&
+          Math.sign(this.body.velocity.x) === (this.flipX ? 1 : -1)
+        );
       },
       jump: () => {
         return this.body.velocity.y < 0;
       },
       flip: () => {
-        return this.body.velocity.y < 0 && this.moveState.is('flipping');
+        return this.body.velocity.y < 0 && this.moveState.is("flipping");
       },
       fall: () => {
         return this.body.velocity.y > 0;
@@ -70,13 +81,21 @@ class Hero extends Phaser.GameObjects.Sprite {
 
   setupMovement() {
     this.moveState = new StateMachine({
-      init: 'standing',
+      init: "standing",
       transitions: [
-        { name: 'jump', from: 'standing', to: 'jumping' },
-        { name: 'flip', from: 'jumping', to: 'flipping' },
-        { name: 'fall', from: 'standing', to: 'falling' },
-        { name: 'touchdown', from: ['jumping', 'flipping', 'falling'], to: 'standing'},
-        { name: 'die', from: ['jumping', 'flipping', 'falling', 'standing'], to: 'dead' },
+        { name: "jump", from: "standing", to: "jumping" },
+        { name: "flip", from: "jumping", to: "flipping" },
+        { name: "fall", from: "standing", to: "falling" },
+        {
+          name: "touchdown",
+          from: ["jumping", "flipping", "falling"],
+          to: "standing",
+        },
+        {
+          name: "die",
+          from: ["jumping", "flipping", "falling", "standing"],
+          to: "dead",
+        },
       ],
       methods: {
         onJump: () => {
@@ -109,27 +128,37 @@ class Hero extends Phaser.GameObjects.Sprite {
   }
 
   kill() {
-    if (this.moveState.can('die')) {
+    if (this.moveState.can("die")) {
       this.moveState.die();
       this.animState.die();
-      this.emit('died');
+      this.emit("died");
     }
   }
 
   isDead() {
-    return this.moveState.is('dead');
+    return this.moveState.is("dead");
   }
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    this.input.didPressJump = !this.isDead() && Phaser.Input.Keyboard.JustDown(this.keys.up);
-    
+    // let mobileLeft;
+    this.mobileRight;
+    // let mobileUp;
+
+    // eventsCenter.on("rightButtonTouched", this.right(), this);
+    // console.log(this.mobileRight);
+
+    this.input.didPressJump =
+      !this.isDead() && Phaser.Input.Keyboard.JustDown(this.keys.up);
+
+    eventsCenter.on("go-to-right-emitt", this.rightMobileHandleButton, this);
+
     if (!this.isDead() && this.keys.left.isDown) {
       this.body.setAccelerationX(-1000);
       this.setFlipX(true);
       this.body.offset.x = 8;
-    } else if (!this.isDead() && this.keys.right.isDown) {
+    } else if ((!this.isDead() && this.keys.right.isDown) || this.mobileRight) {
       this.body.setAccelerationX(1000);
       this.setFlipX(false);
       this.body.offset.x = 12;
@@ -137,7 +166,7 @@ class Hero extends Phaser.GameObjects.Sprite {
       this.body.setAccelerationX(0);
     }
 
-    if (this.moveState.is('jumping') || this.moveState.is('flipping')) {
+    if (this.moveState.is("jumping") || this.moveState.is("flipping")) {
       if (!this.keys.up.isDown && this.body.velocity.y < -150) {
         this.body.setVelocityY(-150);
       }
@@ -158,6 +187,13 @@ class Hero extends Phaser.GameObjects.Sprite {
     }
   }
 
+  rightMobileHandleButton(rightTrue) {
+    if (rightTrue) {
+      this.mobileRight = true;
+    } else if (!rightTrue) {
+      this.mobileRight = false;
+    }
+  }
 }
 
 export default Hero;
