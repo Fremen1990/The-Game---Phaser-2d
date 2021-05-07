@@ -142,19 +142,19 @@ class Hero extends Phaser.GameObjects.Sprite {
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    // let mobileLeft;
-    this.mobileRight;
-    // let mobileUp;
+    ///////////emmit function from Button Scene
+    eventsCenter.on("go-to-right-emitt", this.rightMobileHandleButton, this);
+    eventsCenter.on("go-to-left-emitt", this.leftMobileHandleButton, this);
+    // console.log(this.mobileLeft);
+    eventsCenter.on("go-to-up-emitt", this.upMobileHandleButton, this);
 
-    // eventsCenter.on("rightButtonTouched", this.right(), this);
-    // console.log(this.mobileRight);
+    // console.log(this.mobileUp);
 
     this.input.didPressJump =
-      !this.isDead() && Phaser.Input.Keyboard.JustDown(this.keys.up);
+      !this.isDead() &&
+      (Phaser.Input.Keyboard.JustDown(this.keys.up) || this.mobileUp);
 
-    eventsCenter.on("go-to-right-emitt", this.rightMobileHandleButton, this);
-
-    if (!this.isDead() && this.keys.left.isDown) {
+    if ((!this.isDead() && this.keys.left.isDown) || this.mobileLeft) {
       this.body.setAccelerationX(-1000);
       this.setFlipX(true);
       this.body.offset.x = 8;
@@ -172,6 +172,10 @@ class Hero extends Phaser.GameObjects.Sprite {
       }
     }
 
+    if (this.mobileUp) {
+      this.body.setVelocityY(-350);
+    }
+
     for (const t of this.moveState.transitions()) {
       if (t in this.movePredicates && this.movePredicates[t]()) {
         this.moveState[t]();
@@ -187,11 +191,28 @@ class Hero extends Phaser.GameObjects.Sprite {
     }
   }
 
+  //////////////// mobile handler from emmit function
   rightMobileHandleButton(rightTrue) {
     if (rightTrue) {
       this.mobileRight = true;
     } else if (!rightTrue) {
       this.mobileRight = false;
+    }
+  }
+
+  leftMobileHandleButton(leftTrue) {
+    if (leftTrue) {
+      this.mobileLeft = true;
+    } else if (!leftTrue) {
+      this.mobileLeft = false;
+    }
+  }
+
+  upMobileHandleButton(upTrue) {
+    if (upTrue) {
+      this.mobileUp = true;
+    } else if (!upTrue) {
+      this.mobileUp = false;
     }
   }
 }
