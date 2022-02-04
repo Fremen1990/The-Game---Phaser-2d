@@ -10,7 +10,7 @@ class ScoreScene extends Phaser.Scene {
   create() {
     this.label = this.add.text(20, 20, "Score: 99", { fontSize: 24 });
 
-    eventsCenter.on("update-score", this.updateScore, this);
+    eventsCenter.on("update-score", this.updateScore);
   }
 
   updateScore(scoreCount) {

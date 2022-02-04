@@ -15,7 +15,7 @@ new Phaser.Game(
       StartScene,
       GameScene,
       GameOverScene,
-      ButtonsScene,
+      // ButtonsScene,
       ScoreScene,
     ],
   })
